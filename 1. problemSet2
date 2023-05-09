@@ -1,0 +1,59 @@
+#include <cs50.h>
+#include <stdio.h>
+
+int main(void)
+{
+    // Asking user for credit card number
+    long card = get_long("Number: ");
+    long t_card = card;
+    int length = 0;
+
+    // find length of card number
+    while (t_card > 0)
+    {
+        t_card /= 10;
+        length += 1;
+    }
+
+    // If 15 digits and starts with 34 or 37: American Express
+    if (length == 15 && (card / 10000000000000 == 34 || card / 10000000000000 == 37))
+    {
+        printf("American Express");
+    }
+    // else if 16 digits and starts with 51, 52, 53, 54, or 55: MasterCard
+    else if (length == 16 && (card / 10000000000000 == 51 || card / 10000000000000 == 52 || card / 10000000000000 == 53 || card / 10000000000000 == 54 || card / 10000000000000 == 55))
+    {
+        printf("MasterCard");
+    }
+    // else if 13 or 16 digits and starts with 4: VISA
+    else if ((length == 13 && card / 1000000000000 == 4) || (length == 16 && card / 1000000000000000 == 4))
+    {
+        printf("VISA");
+    }
+    // else INVALID
+    else
+    {
+        printf("INVALID");
+    }
+
+    printf("\n");
+
+    // Check if checksum algorithm ends in a zero
+    long tt_card = card;
+    long digit;
+    long sum = 0;
+    while (tt_card > 0)
+    {
+        tt_card /= 10;
+        if (2 * (tt_card % 10) > 9)
+        {
+            sum += ((2 * (tt_card % 10)) % 10);
+        }
+        else
+        {
+            sum += (2 * (tt_card % 10));
+        }
+        tt_card /= 10;
+    }
+    printf("%ld", sum);
+}
