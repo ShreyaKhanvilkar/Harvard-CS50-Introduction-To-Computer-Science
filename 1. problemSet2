@@ -5,55 +5,71 @@ int main(void)
 {
     // Asking user for credit card number
     long card = get_long("Number: ");
-    long t_card = card;
-    int length = 0;
 
-    // find length of card number
-    while (t_card > 0)
+    // Check if checksum algorithm ends in a zero
+    long tt_card = card;
+    long sum = 0;
+    long product = 0;
+
+    // Using card to get the sum and product
+    while (tt_card > 0)
     {
-        t_card /= 10;
-        length += 1;
+        // Every not second to last number sum
+        sum += tt_card % 10;
+
+        // Every second to last number sum multiplied by 2
+        tt_card /= 10;
+        if (2 * (tt_card % 10) > 9)
+        {
+            product += ((2 * (tt_card % 10)) / 10) + ((2 * (tt_card % 10)) % 10);
+        }
+        else
+        {
+            product += (2 * (tt_card % 10));
+        }
+        tt_card /= 10;
     }
 
-    // If 15 digits and starts with 34 or 37: American Express
-    if (length == 15 && (card / 10000000000000 == 34 || card / 10000000000000 == 37))
+    // Checking if pattern of card matches card type
+    if (((sum + product) % 10) == 0)
     {
-        printf("American Express");
+        long t_card = card;
+        int length = 0;
+
+        // find length of card number
+        while (t_card > 0)
+        {
+            t_card /= 10;
+            length += 1;
+        }
+
+        // If 15 digits and starts with 34 or 37: American Express
+        long MC = 100000000000000;
+        if (length == 15 && (card / 10000000000000 == 34 || card / 10000000000000 == 37))
+        {
+            printf("AMEX");
+        }
+        // else if 16 digits and starts with 51, 52, 53, 54, or 55: MasterCard
+        else if (length == 16 && (card / MC == 51 || card / MC == 52 || card / MC == 53 || card / MC == 54 || card / MC == 55))
+        {
+            printf("MASTERCARD");
+        }
+        // else if 13 or 16 digits and starts with 4: VISA
+        else if ((length == 13 && card / 1000000000000 == 4) || (length == 16 && card / 1000000000000000 == 4))
+        {
+            printf("VISA");
+
+        }
+        // else INVALID because card type doesn't match
+        else
+        {
+            printf("INVALID");
+        }
+        // else INVALID because sum and product aren't divisible by 10
     }
-    // else if 16 digits and starts with 51, 52, 53, 54, or 55: MasterCard
-    else if (length == 16 && (card / 10000000000000 == 51 || card / 10000000000000 == 52 || card / 10000000000000 == 53 || card / 10000000000000 == 54 || card / 10000000000000 == 55))
-    {
-        printf("MasterCard");
-    }
-    // else if 13 or 16 digits and starts with 4: VISA
-    else if ((length == 13 && card / 1000000000000 == 4) || (length == 16 && card / 1000000000000000 == 4))
-    {
-        printf("VISA");
-    }
-    // else INVALID
     else
     {
         printf("INVALID");
     }
-
     printf("\n");
-
-    // Check if checksum algorithm ends in a zero
-    long tt_card = card;
-    long digit;
-    long sum = 0;
-    while (tt_card > 0)
-    {
-        tt_card /= 10;
-        if (2 * (tt_card % 10) > 9)
-        {
-            sum += ((2 * (tt_card % 10)) % 10);
-        }
-        else
-        {
-            sum += (2 * (tt_card % 10));
-        }
-        tt_card /= 10;
-    }
-    printf("%ld", sum);
 }
