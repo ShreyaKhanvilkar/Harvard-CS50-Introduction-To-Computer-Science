@@ -1,0 +1,11 @@
+sort1 uses: Bubble Sort
+How do you know?:
+sort1 took about 0.282 (real) seconds to run [for reversed10000.txt]. This was the slowest time taken compared to all three sorts. Based on the 60-second clip that Mr. Malam showed, even though Bubble Sort has the same time complexity as Selection Sort (with O(n^2) average), it is the slowest at sorting.
+
+sort2 uses: Merge Sort
+How do you know?:
+sort2 took about 0.080 (real) seconds to run [for reversed10000.txt]. This was the shortest time taken by all three sorts. Based on the 60-second clip that Mr. Malan showed, Merge Sort (with O(nlogn) average) would be expected to have the shortest sort time.
+
+sort3 uses: Selection Sort
+How do you know?:
+sort3 took about 0.212 seconds to run [for reversed10000.txt]. This was the second fastest time right after sort2 (Merge Sort). Based on the 60-second clip that Mr. Malan showed, Selection Sort (with O(n^2) average) would be expected to have the second longest sort time.
