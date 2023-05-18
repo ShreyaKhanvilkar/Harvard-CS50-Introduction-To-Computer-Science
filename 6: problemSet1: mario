@@ -1,19 +1,29 @@
 def main():
+    # calling get_height function
     num = get_height()
     for i in range(num):
-        print(" " * (num - i - 1), end = "")
-        print("#" * (i+1), end = "")
-        print("  ", end = "")
+        # printing out the spaces [subtracting one to avoid extra space at the start of each line]
+        print(" " * (num - i - 1), end="")
+        # printing out the left half of the pyramid
+        print("#" * (i+1), end="")
+        # printing out the two spaces in between both halves of the pyramid
+        print("  ", end="")
+        # printing out the right half of the pyramid
         print("#" * (i + 1))
 
 
 def get_height():
     while True:
         try:
+            # getting input from the user
             n = int(input("Height: "))
+            # making sure the input from the user is between 1 and 8 inclusive
             if n > 0 and n < 9:
+                # return input from function
                 return n
+        # making sure input is an integer
         except ValueError:
+            # goes back to the start of the while loop
             continue
 
 
