@@ -1,0 +1,24 @@
+from string import ascii_letters as let
+
+
+def main():
+    text = input("Text: ")
+
+    letters = len([i for i in text if i in let])
+
+    words = len(text.split())
+
+    sentences = len([i for i in text if i == "." or i == "?" or i == "!"])
+
+    index = round(0.0588 * ((100 * letters) / words) - 0.296 * ((100 * sentences) / words) - 15.8)
+    print(index)
+
+    if index < 1:
+        print("Before Grade 1")
+    elif index >= 16:
+        print("Grade 16+")
+    else:
+        print("Grade ", index)
+
+
+main()
