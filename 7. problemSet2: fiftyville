@@ -1,0 +1,194 @@
+-- getting started
+.table
+-- moving to crime scene
+
+
+-- getting more information about the crime scene
+.schema crime_scene_reports
+
+SELECT description
+FROM crime_scene_reports
+WHERE month = 7 AND day = 28
+AND street = 'Humphrey Street';
+-- Theft Timing: 10:15 am with witness mentioning bakery. Littering at 16:36 at the bakery.
+
+SELECT *
+FROM crime_scene_reports
+WHERE month = 7 AND day = 28
+AND street = 'Humphrey Street';
+-- id: 295, 297
+
+
+-- investigating the lead in the bakery
+.schema bakery_security_logs
+
+SELECT activity
+FROM bakery_security_logs
+WHERE year = 2021 AND month = 7 AND day = 28
+AND hour = 4 AND minute = 36;
+-- nothing
+
+
+-- investigating witness interviews
+SELECT name, transcript
+FROM interviews
+WHERE year = 2021
+AND month = 7
+AND day = 28;
+
+.schema interviews
+SELECT transcript
+FROM interviews
+WHERE year = 2021 AND month = 7 AND day = 28;
+-- Things to check up on:
+    -- Ruth: Within 10 mins of theft, thief got into car in bakery parking lot
+    -- Raymond: As they left, they called and talked to someone for less than a minute [planned to take the earliest flight out tomorrow and asked said person to purchase ticket]
+    -- Eugene: ATM on Leggett Street earlier this morning, their withdrew money
+    -- Lily: Sons [Robert and Patrick] left to Paris
+
+SELECT id
+FROM interviews
+WHERE year = 2021 AND month = 7 AND day = 28;
+-- id: 158, 159, 160, 161, 162, 163, 191 [ignore these]
+
+
+-- investigating the lead in the bakery again with bakery_security_logs
+SELECT activity
+FROM bakery_security_logs
+WHERE year = 2021 AND month = 7 AND day = 28
+AND hour = 10 AND minute = 16;
+-- activity: exit
+
+SELECT license_plate
+FROM bakery_security_logs
+WHERE year = 2021 AND month = 7 AND day = 28
+AND hour = 10 AND minute = 16;
+-- license_plate: 5P2BI95
+
+SELECT id
+FROM bakery_security_logs
+WHERE year = 2021 AND month = 7 AND day = 28
+AND hour = 10 AND minute = 16;
+-- id: 260 [ignore these]
+
+
+-- investigating phone call by thief [ignore all of this]
+.schema phone_calls
+
+SELECT *
+FROM phone_calls
+WHERE year = 2021 AND month = 7 AND day = 28
+AND id = 260;
+-- possibly the thief and accomplice
+
+SELECT *
+FROM phone_calls
+WHERE caller = '(669) 555-6918';
+
+SELECT *
+FROM people
+WHERE phone_number = '(669) 555-6918';
+-- no passport
+
+SELECT *
+FROM phone_calls
+WHERE caller = '(971) 555-6468';
+
+SELECT *
+FROM people
+WHERE phone_number = '(971) 555-6468';
+
+
+-- Using people to investigate
+.schema people
+SELECT *
+FROM people
+WHERE id = 260;
+-- nothing
+
+SELECT *
+FROM people
+WHERE license_plate = '5P2BI95';
+-- id: 221103  name: Vanessa  phone_number: (725) 555-4692  passport_number: 296300835
+
+
+-- Seeing passport information using flights and passengers
+.schema flights
+.schema airports
+.schema passengers
+
+SELECT *
+FROM passengers
+WHERE passport_number = 2963008352;
+-- Three flights:
+    --- flight_id: 2 seat: 6C
+    --- flight_id: 20  seat: 6B
+    --- flight_id: 39  seat: 8C
+
+SELECT *
+FROM passengers
+JOIN flights ON flights.id = passengers.flight_id;
+-- a lot
+
+SELECT *
+FROM airports
+WHERE city = 'Fiftyville'
+-- city id for Fiftyville: 8
+
+SELECT *
+FROM passengers
+JOIN flights ON flights.id = passengers.flight_id
+WHERE origin_airport_id = 8 AND year = 2021
+AND month = 7 AND day = 29;
+-- nothing important
+
+SELECT *
+FROM airports
+JOIN flights ON airports.id = flights.destination_airport_id
+AND year = 2021 AND month = 7 AND day = 29;
+-- earliest flight is at 8:20 from LaGuardia Airport, New York City with flight_id of 36
+
+SELECT *
+FROM airports
+WHERE city = 'New York City';
+
+SELECT *
+FROM people
+JOIN passengers ON people.passport_number = passengers.passport_number
+JOIN flights ON passengers.flight_id = flights.id
+WHERE year = 2021 AND month = 7 AND day = 29 AND hour = 8 AND minute = 20
+ORDER BY passport_number ASC;
+-- Suspect List: Edward, Sofia, Taylor, Bruce, Doris, Kelsey, Luca, Kenny
+
+
+-- Checking ATM information
+.schema atm_transaction
+
+SELECT name, license_plate, phone_number, passport_number
+FROM atm_transactions
+JOIN bank_accounts ON atm_transactions.account_number = bank_accounts.account_number
+JOIN people ON bank_accounts.person_id = people.id
+WHERE year = 2021 AND month = 7 AND day = 28
+AND atm_location = 'Leggett Street' AND transaction_type = 'withdraw';
+-- Suspect List: Bruce, Diana, Brooke, Kenny, Iman, Luca, Taylor, Benista
+
+-- calling
+SELECT *
+FROM people
+JOIN phone_calls ON people.phone_number = phone_calls.caller
+WHERE year = 2021 AND month = 7 AND day = 28 AND phone_calls.duration <= 60;
+-- Suspect List: Sofia, Kelsey, Bruce, Kathryn, Kelsey, Taylor, Diana, Carina, Kenny, Benista
+
+SELECT *
+FROM people
+JOIN phone_calls ON people.phone_number = phone_calls.receiver
+WHERE year = 2021 AND month = 7 AND day = 28 AND phone_calls.duration <= 60;
+-- Suspect List: Jack, Larry, Robin, Luca, Melissa, James, Philip, Jacequeline, Doris, Anna
+-- Robin has to be the accomplice with Bruce as the thief
+
+
+
+
+The THIEF is: Bruce
+The city the thief ESCAPED TO: New York City
+The ACCOMPLICE is: Robin
