@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
+        <link href="styles.css" rel="stylesheet">
+        <title>Trivia!</title>
+        <script>
+            // TODO: Add code to check answers to questions
+            document.addEventListener("DOMContentLoaded", function() {
+                // write
+                let r = document.querySelector('.r');
+                r.addEventListener('click', function(event) {
+                    r.style.backgroundColor = 'green';
+                    document.querySelector('#answermc').innerHTML = 'Your answer is correct!';
+                    });
+
+                let w = document.querySelectorAll('.w');
+                for (let i = 0; i < w.length; i++) {
+                    w[i].addEventListener('click', function(event) {
+                    w[i].style.backgroundColor = 'red';
+                    document.querySelector('#answermc').innerHTML = 'Your answer is incorrect. Please try again.';
+                    });
+                }
+
+                document.querySelector('#check').addEventListener('click', function() {
+                    let answer = document.querySelector('input');
+                    if (answer.value.toLowerCase() == 'yale') {
+                        answer.style.backgroundColor = 'green';
+                        document.querySelector('#answerfr').innerHTML = 'Correct!';
+                    } else {
+                        answer.style.backgroundColor = 'red';
+                        document.querySelector('#answerfr').innerHTML = 'Incorrect';
+                    }
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <div class="header">
+            <h1>Trivia!</h1>
+        </div>
+
+        <div class="container">
+            <div class="section">
+                <h2>Part 1: Multiple Choice </h2>
+                <hr>
+                <!-- TODO: Add multiple choice question here -->
+                <h3>What is the first name of Mr. Malan?: </h3>
+                <button class="w">Carter</button>
+                <button class="w">Damian</button>
+                <button class="w">Devin</button>
+                <button class="r">David</button>
+                <button class="w">Dale</button>
+                <p id = "answermc"></p>
+            </div>
+
+            <div class="section">
+                <h2>Part 2: Free Response</h2>
+                <hr>
+                <!-- TODO: Add free response question here -->
+                <h3>What university played the "WE SUCK" prank on Harvard?: </h3>
+                <input type ="text"> </input>
+                <button id="check">Check</button>
+                <p id = "answerfr"></p>
+            </div>
+        </div>
+    </body>
+</html>
