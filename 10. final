@@ -1,0 +1,423 @@
+from string import ascii_uppercase as letters
+from random import choice, randint
+
+
+def play():
+    print("Welcome to GameZone!")
+    while True:
+        try:
+            play = int(input("""Choose which game you want to play (enter corresponding number):
+            1) Find The X
+            2) Guess The Number
+            3) Cows And Bulls
+            4) Tic Tac Toe
+            5) Hangman
+            6) Rock Paper Scissors
+            7) Pig Die
+    Game = """))
+            if play == 1:
+                hidden_X()
+            elif play == 2:
+                guess_number()
+            elif play == 3:
+                cow_bull()
+            elif play == 4:
+                ttt()
+            elif play == 5:
+                hangman()
+            elif play == 6:
+                rps()
+            elif play == 7:
+                pig_die()
+            else:
+                print("\nPlease enter a valid game number.")
+                continue
+
+            question = input("Do you want to play another game? (y/n): ").lower()
+            if question[0] == "n":
+                print("Thank you for playing!")
+                break
+        except ValueError:
+            print("\nPlease enter a number.")
+            continue
+
+
+
+def pig_die():
+    print("""In this game, players will take turns "rolling" a die to get 30 or more points!
+    A player can roll as many times as they'd like before they "hold" their score and pass their die to the next opponent.
+    If, however, they roll a 1, their score resets back to zero and it's their opponent's turn.
+    Players will continue taking turns until, in the end, the player with a score of 30 or more wins.
+    """)
+
+    while True:
+        try:
+            number = int(input("Enter the number of players: "))
+            break
+        except ValueError:
+            continue
+
+    players = {input(f"Player {name} - Enter your name: ") : 0 for name in range(1, number + 1)}
+
+    def start():
+        while True:
+            for name, score in players.items():
+                result = play(name, score)
+                if not result:
+                    return name
+
+    def play(name,score):
+        while True:
+            if score >= 30:
+                return False
+            turn = input(f"{name} - Press enter to roll die or type 'hold' to end your turn: ").lower()
+            if turn == "":
+                roll = randint(1,6)
+                if roll != 1:
+                    score += roll
+                    print(f"Your roll was {roll}. You currently have {score} points!")
+                else:
+                    score = 0
+                    print("You rolled a 1. You have lost all of your points.")
+                    return True
+            elif turn[0] == "h":
+                print(f"You have chosen to hold. You currently have {score} points!")
+                players[name] += score
+                return True
+            else:
+                print("Please enter a valid input.")
+
+
+    print(f"Congratulations {start()}! You have won!")
+
+
+
+def rps():
+    while True:
+        player_one = input("Player One - Enter your name: ")
+        player_two = input("Player Two - Enter your name: ")
+
+        one = input(f"{player_one} - Rock, Paper, or Scissors: ").lower()
+        two = input(f"{player_two} - Rock, Paper, or Scissors: ").lower()
+
+        if one[0] == two[0]:
+            print("Tie")
+        elif one[0] == "r":
+            if two[0] == "s":
+                print(f"{player_one} Wins!") #One=Rock,Two=Scissors
+            else:
+                print(f"{player_two} Wins!") #One=Rock,Two=Paper
+        elif one[0] == "p":
+            if two[0] == "s":
+                print(f"{player_two} Wins!") #One=Paper,Two=Scissors
+            else:
+                print(f"{player_one} Wins!") #One=Paper,Two=Rock
+        else:
+            if two[0] == "r":
+                print(f"{player_two} Wins!") #One=Scissors,Two=Rock
+            else:
+                print(f"{player_one} Wins!") #One=Scissors,Two=Paper
+        break
+
+
+
+def hangman():
+    global word
+    global blanks
+    global used_letters
+
+#choosing a word from sowpods file
+    def choose_word():
+        with open('project//sowpods.txt', 'r') as f:
+            line = f.readlines()
+            global word
+            word = choice(line).strip().upper()
+
+    #printing the word characters as they are being guessed
+    def word_len():
+        for i in blanks:
+            print(i + " ",end = "")
+        print()
+
+    #setting letters as they are being guessed
+    def hanging(x,character):
+        for i in x:
+            blanks[i] = character
+        word_len()
+
+    def play():
+        lives = 6
+        while lives > 0:
+            user_input = input("\nGuess a letter: ").upper()
+            if user_input in used_letters:
+                print("You have already guessed that letter.")
+                word_len()
+                continue
+            if len(user_input) > 1 or user_input.isnumeric() or user_input == "":
+                print("Enter a letter.")
+                word_len()
+                continue
+            #record guessed letters
+            used_letters.append(user_input)
+            print(user_input)
+            if user_input in word:
+                hanging([i for i, c in enumerate(word) if c == user_input],user_input)
+                print(f"{user_input} is in the word. You have {lives} lives left.")
+            if user_input not in word:
+                lives -= 1
+                print(f"{user_input} is not in the word. You have {lives} lives left.")
+                word_len()
+            if lives == 0:
+                print(f"\nYou have lost. The word was {word}.\n")
+            if "_ " not in blanks:
+                print(f"\nCongratulations! The word was {word}. You had {lives} lives left.\n")
+                break
+
+    while True:
+        #setting letters and blanks to zero for new game and choosing new word
+        used_letters = []
+        choose_word()
+        blanks = [("_ ") for i in range(len(word))]
+        for i in blanks:
+            print(i, end="")
+        play()
+        break
+
+
+
+def ttt():
+    game = [[" "," "," "],
+            [" "," "," "],
+            [" "," "," "]]
+
+    #drawing the gameboard after every move
+    def gameboard():
+
+        def tops():
+            x = "-"
+            for i in range(3):
+                print("", x*3, end = "")
+            print()
+
+        def middle():
+            for i in range(3):
+                for j in range(3):
+                    y = f"| {game[i][j]} "
+                    print(y,end="")
+                print("|")
+                tops()
+        tops()
+        middle()
+
+    #instructions and name assignment
+    print("Welcome to Tic-Tac-Toe!")
+    player_one = input("Player One - Enter your name: ")
+    player_two = input("Player Two - Enter your name: ")
+
+    print(f"""You will be inputting the coordinates for the spot/move you want to play.
+    Row first, then column, and use a comma to seperate your numbers.
+    The coordinates would start at the top left and end at the bottom right.
+    For example: (1,1) would be the coordinate on the top left, (1, 3)
+    would be top right, and (2,2) would be the middle spot.
+    Enter your move without any paranthesis or spaces.
+    {player_one} will be X and {player_two} will be O""")
+
+    #playerone gameplay
+    def one():
+        while True:
+            try:
+                play_one = input(f"{player_one} - Enter your move: ").strip().split(",")
+                play_one = [int(x)-1 for x in play_one]
+                if play_one[0] > 3 or play_one[1] > 3 or len(play_one) != 2:
+                    print("Please enter an acceptable move.")
+                    continue
+                if game[play_one[0]][play_one[1]] != " ":
+                    print("Someone has already played here. Pick a different spot.")
+                    continue
+                game[play_one[0]][play_one[1]] = "X"
+                gameboard()
+                break
+            except ValueError:
+                print("Please enter an acceptable move.")
+                continue
+            except IndexError:
+                print("Please enter an acceptable move.")
+                continue
+
+    #playertwo gameplay
+    def two():
+        while True:
+            try:
+                play_two = input(f"{player_two} - Enter your move: ").strip().split(",")
+                play_two = [int(x)-1 for x in play_two]
+                if play_two[0] > 3 or play_two[1] > 3 or len(play_two) != 2:
+                    print("Please enter an acceptable move.")
+                    continue
+                if game[play_two[0]][play_two[1]] != " ":
+                    print("Someone has already played here. Pick a different spot.")
+                    continue
+                game[play_two[0]][play_two[1]] = "O"
+                gameboard()
+                break
+            except ValueError:
+                print("Please enter an acceptable move.")
+                continue
+            except IndexError:
+                print("Please enter an acceptable move.")
+                continue
+
+    #keeping turn and ending the game when all of the spots are filled
+    def playing():
+        count = 0
+        keep = True
+        while keep:
+            if count % 2 == 0:
+                one()
+            else:
+                two()
+            count += 1
+
+            keep = False
+            for i in range(0,3):
+                for j in range(0,3):
+                    if game[i][j] == " ":
+                        keep = True
+
+
+
+    #telling players who won
+    def end_game():
+            gameboard()
+            playing()
+            winner = "TIE! There is no winner."
+            if game[0][0] == game[1][1] == game[2][2] or game[0][2] == game[1][1] == game[2][0]:
+                if game[0][0] == "X":
+                    winner = f"{player_one} Wins!"
+                else:
+                    winner = f"{player_two} Wins!"
+            for i in range(0,3):
+                if game[i][0] == game[i][1] == game[i][2] or game[0][i] == game[1][i] == game[2][i]:
+                    if game[i][0] == "X" or game[0][i] == "X":
+                        winner = f"{player_one} Wins!"
+                    else:
+                        winner = f"{player_two} Wins!"
+            print(winner)
+
+
+    end_game()
+
+
+
+def cow_bull():
+    number = []
+    while len(number) != 4:
+        number = list(dict.fromkeys([(randint(0,9)) for x in range(0,4)]))
+        number ="".join(str(x) for x in number)
+        print(number)
+
+    print("""\nIn this game, you have to guess a four digit number.
+          To help you, cows (a digit is in the number and in the right place)
+          and bulls (a digit is in the number but not in the right place)
+          will be displayed after each turn.""")
+    guesses = 0
+    while True:
+        cows = 0
+        bulls = 0
+        user_number = input("Enter your four-digit guess (no repeated digits): ")
+
+    #making sure  input is four digits long
+        if len(user_number) != 4:
+            print("Error - Not a four digit number.")
+            continue
+
+    #making sure that user input does not contain duplicate numbers
+        user_number = list(dict.fromkeys([x for x in user_number]))
+        if len(user_number) != 4:
+            print("Error - No repeated digits.")
+            continue
+
+    #turning number back into a str and counting a guess
+        user_number ="".join(str(x) for x in user_number)
+        guesses += 1
+
+    #correct guess
+        if user_number == number:
+            print(f"Congratulation! You are correct. It took you {guesses} guesses.")
+            break
+
+    #outputting cows and bulls
+        for x in range(0,4):
+            if number[x] == user_number[x]:
+                cows += 1
+            elif user_number[x] in number:
+                bulls += 1
+        print(f"Cows: {cows}")
+        print(f"Bulls: {bulls}")
+
+
+
+def guess_number():
+    print("\nIn this game, you have to guess the correct number between 1 to 100.")
+    while True:
+        number = randint(1,100)
+        try:
+            guess = int(input("Enter a guess: "))
+            while guess != number:
+                if guess > number:
+                    print("Guess a smaller number.")
+                    guess = int(input("Enter a guess: "))
+                else:
+                    print("Guess a larger number.")
+                    guess = int(input("Enter a guess: "))
+            else:
+                print("You guessed the correct number.")
+                break
+
+        except ValueError:
+            print("Enter a number.")
+
+
+
+def hidden_X():
+    print("\nIn this game, you have to: ")
+    a_f = list(letters[:6])
+    board = [["O" for i in range(6)] for i in range(6)]
+
+    hidden = [choice(a_f) + str(choice(list(range(1,7)))) for i in range(4)]
+
+    while True:
+
+        print(f"Find the {len(hidden)} hidden X's on the board.")
+
+        num = iter(range(1,7))
+        print("  " + " ".join(a_f))
+        for i in board:
+            print(next(num),end=" ")
+            print(" ".join(i))
+
+        move = input("\nEnter Move (ex. A5): ")
+        char = [x for x in move]
+
+        if len(move) != 2 or char[0] not in a_f or char[1] not in str(list(range(1,7))):
+            print("\nInvalid move. Please try again.\n")
+        else:
+            if board[int(move[1])-1][a_f.index(move[0])] == "X":
+                print("\nYou have found X here already!\n")
+            elif move in hidden:
+                hidden.pop(hidden.index(move))
+                board[int(move[1])-1][a_f.index(move[0])] = "X"
+            else:
+                move = list(move)
+                board[int(move[1])-1][a_f.index(move[0])] = " "
+
+        count = 0
+        for i in board:
+            for j in i:
+                if j == 'X':
+                    count += 1
+
+        if count == 4:
+            print("\nCongratulations! You have found all 4 hidden X's!")
+            break
+
+play()
